@@ -57,7 +57,7 @@ def add(userName, userCommand, ninjAdd = 0):
                 if classCount('demo') < 2 or classCount('scout') < 4 or classCount('soldier') < 4:
                     return 0
                 if state == 'captain' and countCaptains() < 2:
-                    sendChannel("\x037,01Warning!\x030,01 This PUG need 2 captains to start.")
+                    sendChannel("\x037,01Warning!\x0f\x02 This PUG need 2 captains to start.")
                     return 0
                 if len(findAwayUsers()) == 0:
                     initGame()
@@ -90,7 +90,7 @@ def add(userName, userCommand, ninjAdd = 0):
                 sendNotice("You can't add during the picking process.", userName)
                 return 0
     else:
-        sendChannel("\x030,01You can't \"!add\" until an admin has started a game.")
+        sendChannel("\x02You can't \"!add\" until an admin has started a game.")
 
 def addFriend(userName, userCommand):
     global userList
@@ -149,7 +149,7 @@ def addGame(userName, userCommand):
         state = 'normal'
         userLimit = 12
     updateLast(gameServer.split(':')[0], gameServer.split(':')[1], -(time.time()))
-    sendChannel('\x030,01PUG started. Game type : ' + state + '. Type "!add" to join a game.')
+    sendChannel('\x030,04PUG started. Game type : ' + state + '. Type "!add" to join a game.')
 
 def analyseIRCText(connection, event):
     global adminList, userList
@@ -170,7 +170,7 @@ def analyseIRCText(connection, event):
                 executeCommand(userName, escapedUserCommand, userCommand)
             else :
             # Exit and report an error.
-                sendChannel("\x030,01Warning " + userName + ", you are trying an admin command as a normal user.")
+                sendNotice("\x030,01Warning " + userName + ", you are trying an admin command as a normal user.")
         elif isUserCommand(userName, escapedUserCommand, userCommand):
                 executeCommand(userName, escapedUserCommand, userCommand)
 
@@ -516,10 +516,10 @@ def game(userName, userCommand):
     global captainStageList, state
     mode = userCommand.split(' ')
     if len(mode) <= 1:
-        sendChannel('\x030,01The actual game mode is set to "%s".' % state)
+        sendChannel('\x02The actual game mode is set to "%s".' % state)
         return 0
     elif not isAdmin(userName):
-        sendChannel("\x030,01Warning %s, you are trying an admin command as a normal user." % userName)
+        sendChannel("\x02Warning %s, you are trying an admin command as a normal user." % userName)
         return 0
     if mode[1] == 'captain':
         if state == 'scrim':
@@ -816,7 +816,7 @@ def getWinStats(userName):
     return [userName, 0, 0, 0, 0]
 
 def help():
-    sendChannel("\x030,01Visit \x0311,01http://steamcommunity.com/groups/tf2mix/discussions/0/882961586767057144/\x030,01 to get help about the PUG process.")
+    sendChannel("\x02Visit \x0f\x0311,01http://steamcommunity.com/groups/tf2mix/discussions/0/882961586767057144/\x0f\x02 to get help about the PUG process.")
 
 def invite(userName, userCommand):
     authorize(userName, userCommand, 3)
@@ -826,7 +826,7 @@ def ip(userName, userCommand):
     commandList = string.split(userCommand, ' ')
     if len(commandList) < 2:
         if gameServer != '':
-            message = "\x030,01Server IP : \"connect " + gameServer + "; password " + password + ";\". We are using our own servers but we like these guys at : \x0307,01http://tragicservers.com/"
+            message = "\x02Server IP: \x02\"connect " + gameServer + "; password " + password + ";\"\x02. We are using our own servers but we like these guys at: \x0307,01http://tragicservers.com/"
             sendChannel("" + message)
         return 0
     setIP(userName, userCommand)
@@ -968,11 +968,11 @@ def isInATeam(userName):
 def last():
     global lastGame
     if lastGame == 0:
-        sendChannel("\x030,010 matches have been played since the bot got restarted.")
+        sendChannel("\x020 matches have been played since the bot got restarted.")
         return 0
-    message = "\x030,01"
+    message = "\x02"
     if isMatch():
-        message += "A game is currently being played. "
+        message += "(A game is also in progress.) "
     lastTime = (time.time() - lastGame) / 3600
     hours = math.floor(lastTime)
     minutes = math.floor((lastTime - hours) * 60)
@@ -985,11 +985,11 @@ def limit(userName, userCommand):
     global userLimit
     commandList = string.split(userCommand, ' ')
     if len(commandList) < 2:
-        sendChannel("\x030,01The PUG's user limit is set to \"" + str(userLimit) + "\".")
+        sendChannel("\x02The PUG's user limit is set to \"" + str(userLimit) + "\".")
         return 0
     try:
         if not isAdmin(userName):
-            sendChannel("\x030,01Warning " + userName + ", you are trying an admin command as a normal user.")
+            sendChannel("\x02Warning " + userName + ", you are trying an admin command as a normal user.")
             return 0
         if int(commandList[1]) < 12:
             sendNotice("The limit value must be equal or above 12.")
@@ -1028,7 +1028,7 @@ def listeningTF2Servers():
                         clearSubstitutes(ip, port)
                         updateLast(ip, port, 0)
                         updateStats(ip, port, score)
-                        sendChannel("\x030,01Game over on server \"" + getDNSFromIP(ip) + ":" + port + "\", final score is : \x0311,01" + score.split(':')[0] + "\x030,01 to \x034,01" + score.split(':')[1] + "\x030,01.")
+                        sendChannel("\x02Game over on server \"" + getDNSFromIP(ip) + ":" + port + "\", final score is:\x02\x0311 " + score.split(':')[0] + "\x0f\x02 to \x02\x034" + score.split(':')[1] + "\x0f\x02.")
                     cursor.execute('DELETE FROM srcds WHERE time = %s', (queryData[i][1],))
                     cursor.execute('COMMIT;')
             if time.time() - queryData[i][1] >= 20:
@@ -1298,7 +1298,7 @@ def printTeamsHandicaps():
 def printUserList():
     global lastUserPrint, printTimer, state, userList
     if (time.time() - lastUserPrint) > 5:
-        message = "\x030,01" + str(len(userList)) + " user(s) subscribed :"
+        message = "\x02" + str(len(userList)) + " user(s) subscribed :"
         for i, user in userList.copy().iteritems():
             userStatus = ''
             if user['status'] == 'captain':
@@ -1494,7 +1494,7 @@ def sendMessageToAwayPlayers():
     nickList = []
     for nick in awayList:
         nickList.append(nick)
-    sendChannel("\x038,01Warning!\x030,01 %s considered as inactive by the bot: %s. If %s show any activity in the next minute, they will automatically be removed from the player list." % words)
+    sendChannel("\x038,01Warning!\x0f\x02 %s considered as inactive by the bot: %s. If %s show any activity in the next minute, they will automatically be removed from the player list." % words)
     for user in awayList:
         sendMsg('Warning, you are considered as inactive by the bot and a game you subscribed is starting. If you still want to play this game you have to type anything in the channel, suggestion "\x034!ready\x031". If you don\'t want to play anymore you can remove by typing "!remove". Note that after 60 seconds you will be automatically removed.', user)
 
@@ -1543,7 +1543,7 @@ def stats(userName, userCommand):
     cursor = connection.cursor()
     if len(commandList) < 2:
         if len(userList) == 0:
-            sendChannel('\x030,01There is no players added up at the moment.')
+            sendChannel('\x02There is no players added up at the moment.')
             return 0
         maximum = 0
         sorted = []
@@ -1571,9 +1571,9 @@ def stats(userName, userCommand):
         j = 0
         sorted.reverse()
         for i in sorted:
-            sorted[j] = i + ' = ' + getMedicRatioColor(stats[i][1]) + str(stats[i][0]) + '/' + str(stats[i][1]) + '%\x030,01'
+            sorted[j] = i + ' = ' + getMedicRatioColor(stats[i][1]) + str(stats[i][0]) + '/' + str(stats[i][1]) + '%\x0f\x02'
             j = j + 1
-        sendChannel('\x030,01Medic stats : ' + ", ".join(sorted))
+        sendChannel('\x02Medic stats : ' + ", ".join(sorted))
         return 0
     if commandList[1] == 'me':
         commandList[1] = userName
@@ -1592,13 +1592,13 @@ def stats(userName, userCommand):
     else:
         authorizationStatus = ''
     if not winStats[1]:
-        sendChannel('\x030,01No stats are available for the user "' + commandList[1] + '".' + authorizationStatus)
+        sendChannel('\x02No stats are available for the user "' + commandList[1] + '".' + authorizationStatus)
         return 0
     medicRatio = int(float(medicStats['totalGamesAsMedic']) / float(winStats[4]) * 100)
     winRatio = int(winStats[3] * 100)
     color = getMedicRatioColor(medicRatio)
-    print commandList[1] + ' played a total of ' + str(winStats[4]) + ' game(s), has a win ratio of ' + str(winRatio) +'% and has a medic ratio of ' + color + str(medicRatio) + '%\x030,01.'
-    sendChannel('\x030,01' + commandList[1] + ' played a total of ' + str(winStats[4]) + ' game(s) and has a medic ratio of ' + color + str(medicRatio) + '%\x030,01.' + authorizationStatus)
+    print commandList[1] + ' played a total of ' + str(winStats[4]) + ' game(s), has a win ratio of ' + str(winRatio) +'% and has a medic ratio of ' + color + str(medicRatio) + '%\x0f\x02.'
+    sendChannel('\x02' + commandList[1] + ' played a total of ' + str(winStats[4]) + ' game(s) and has a medic ratio of ' + color + str(medicRatio) + '%\x0f\x02.' + authorizationStatus)
 
 def status():
     for server in getServerList():
@@ -1611,14 +1611,14 @@ def status():
                     serverInfo['map'] = s.split(" ")[2]
             if 3 <= int(serverInfo['playerCount']):
                 if re.search("^Tournament is not live", serverInfo['tournamentInfo']):
-                    sendChannel("\x030,01 " + server['dns'] + ": warmup on " + serverInfo['map'] + " with " + serverInfo['playerCount'] + " players")
+                    sendChannel("\x02 " + server['dns'] + ": warmup on " + serverInfo['map'] + " with " + serverInfo['playerCount'] + " players")
                 else:
                     serverInfo['tournamentInfo'] = serverInfo['tournamentInfo'].split("\"")
-                    sendChannel("\x030,01 " + server['dns'] + ": \x0311,01" + serverInfo['tournamentInfo'][3].split(":")[0] + "\x030,01:\x034,01" + serverInfo['tournamentInfo'][3].split(":")[1] + "\x030,01 on " + serverInfo['map'] + " with " + serverInfo['tournamentInfo'][1] + " remaining")
+                    sendChannel("\x02 " + server['dns'] + ": \x0311,01" + serverInfo['tournamentInfo'][3].split(":")[0] + "\x0f\x02:\x034,01" + serverInfo['tournamentInfo'][3].split(":")[1] + "\x0f\x02 on " + serverInfo['map'] + " with " + serverInfo['tournamentInfo'][1] + " remaining")
             else:
-                sendChannel("\x030,01 " + server['dns'] + ": empty")
+                sendChannel("\x02 " + server['dns'] + ": empty")
         except:
-            sendChannel("\x030,01 " + server['dns'] + ": error processing the status info")
+            sendChannel("\x02 " + server['dns'] + ": error processing the status info")
 
 def sub(userName, userCommand):
     global subList
