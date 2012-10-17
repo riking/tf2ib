@@ -21,6 +21,7 @@ def add(userName, userCommand, ninjAdd = 0):
     if state != 'idle':
         winStats = getWinStats(userName)
         medicStats = getMedicStats(userName)
+        desiredClass = extractFirstClass(userCommand)
         print medicStats
         """if userAuthorizationLevel != 3 and not isMedic(userCommand) and (medicStats['totalGamesAsMedic'] == 0 or (float(medicStats['totalGamesAsMedic']) / float(winStats[4]) < 0.05)):
             sendNotice("In order to play in this channel you must have a medic ratio of 5% or higher.")
@@ -30,22 +31,22 @@ def add(userName, userCommand, ninjAdd = 0):
             return 0"""
         if state == 'captain' or state == 'highlander' or state == 'normal':
             remove(userName, 0)
-            if ((len(userList) == (userLimit -1) and classCount('medic') == 0) or (len(userList) == (userLimit -1) and classCount('medic') <= 1)) and not isMedic(userCommand):
+            if ((len(userList) == (userLimit -1) and classCount('medic') == 0) or (len(userList) == (userLimit -1) and classCount('medic') <= 1)) and not desiredClass == 'medic':
                 if not isUser(userName) and userAuthorizationLevel == 3:
-                    userLimit = userLimit + 1
+                    userLimit = userLimit + 1 # admin bump
                 elif not isUser(userName):
                     stats(userName, "!stats %s" % userName)
                     sendNotice("The only class available is medic. Type \"!add medic\" to join this round as this class.", userName)
                     return 0
             if userAuthorizationLevel == 3 and not isUser(userName) and len(userList) == userLimit:
-                userLimit = userLimit + 1
-            if len(extractClasses(userCommand)) == 0:
+                userLimit = userLimit + 1 # admin bump
+            if desiredClass == None:
                 sendNotice("Error! You need to specify a class. Example : \"!add scout\".", userName)
                 return 0
-            elif len(extractClasses(userCommand)) > 1:
-                sendNotice("Error! You can only add as one class.", userName)
-                return 0
-            elif extractClasses(userCommand)[0] not in getAvailableClasses():
+            #elif len(extractClasses(userCommand)) > 1:
+            #    sendNotice("Error! You can only add as one class.", userName)
+            #    return 0
+            elif desiredClass not in getAvailableClasses():
                 sendNotice("The class you specified is not in the available class list: %s." % ", ".join(getAvailableClasses()), userName)
                 return 0
             if len(userList) < userLimit:
@@ -63,7 +64,7 @@ def add(userName, userCommand, ninjAdd = 0):
                 elif type(awayTimer).__name__ == 'float':
                     sendMessageToAwayPlayers()
         elif state == 'scrim':
-            if len(userList) == (userLimit - 2) and classCount('medic') == 0 and not isMedic(userCommand):
+            if len(userList) == (userLimit - 2) and classCount('medic') == 0 and not desiredClass == 'medic':
                 sendNotice("The only class available is medic. Type \"!add medic\" to join this round as this class.", userName)
                 return 0
             print "User add : " + userName + "  Command : " + userCommand
@@ -103,7 +104,7 @@ def addFriend(userName, userCommand):
 
 def addGame(userName, userCommand):
     resetVariables()
-    global allowFriends, classList, gameServer, lastGameType, state, userLimit
+    global allowFriends, classList, classLimits, gameServer, lastGameType, state, userLimit
     if not setIP(userName, userCommand):
         return 0
     # Game type.
@@ -468,6 +469,7 @@ def extractFirstClass(userCommand):
         for j in classList:
             if i == j:
                 return j
+    return None
 
 def extractUserName(user):
     if user:
