@@ -1200,7 +1200,7 @@ def pubmsg(connection, event):
     analyseIRCText(connection, event)
 
 def printCaptainChoices(printType = 'private'): ##TEST FOR FUNCTIONALITY EQUIVALENCE
-    global classList, captainStage, captainStageList, userList
+    global classColors, classList, captainStage, captainStageList, userList
     messageType = sendChannel
     if printType == 'private':
         captainName = getCaptainNameFromTeam(captainStageList[captainStage])
@@ -1215,25 +1215,25 @@ def printCaptainChoices(printType = 'private'): ##TEST FOR FUNCTIONALITY EQUIVAL
         followingColor = '\x0f'
         protectedColor = '\x039,01'
     for gameClass in classList:
-        choiceList = []
-        for userName in userList.copy():
-            if gameClass in userList[userName]['class']:
-                protected = ''
-                """if userList[userName]['authorization'] > 1 and printType == 'private':
-                    protected = protectedColor + 'P' + followingColor"""
-                choiceList.append("(" + str(getPlayerNumber(userName)) + protected + ")" + userName)
+        # String format:
+        # ( bold Number bold ) name
+        choiceList = ["(\x02%d\x02)%s" % (getPlayerNumber(userName), userName) for userName in userList if gameClass in userList[userName]['class']]
         if len(choiceList):
-            messageType("%ss: %s" % (gameClass.capitalize(), ', '.join(choiceList)))
-    choiceList = []
-    for userName in userList.copy():
-        captain = ''
-        if userList[userName]['status'] == 'captain':
-            captain = captainColor + 'C' + followingColor
-        protected = ''
-        """if userList[userName]['authorization'] > 1:
-            protected = protectedColor + 'P' + followingColor"""
-        choiceList.append("(" + str(getPlayerNumber(userName)) + captain + protected + ")" + userName)
-    messageType("%i user(s) : %s" % (len(choiceList), ', '.join(choiceList))) 
+            # String format:
+            # classcolor ClassName s nocolor : [players]
+            messageType("%s%ss\x0f: %s" % (classColors[gameClass], gameClass.capitalize(), ', '.join(choiceList)))
+    # String format:
+    # classcolor ( bold Number Captain Protected bold classcolor ) nocolor name 
+    choiceList = ["%s(\x02%d%s%s\x02%s)\x0f%s" % (
+            classColors[userList[userName]['class']],
+            getPlayerNumber(userName),
+            (captainColor + 'C' if userList[userName]['status'] == 'captain'),
+            '',
+            classColors[userList[userName]['class']],
+            userName) for USerName in userList]
+    # String format:
+    # number user(s): [users]
+    messageType("%i user(s): %s" % (len(choiceList), ', '.join(choiceList))) 
 
 def printSubs():
     global subList
