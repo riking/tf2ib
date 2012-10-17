@@ -1226,7 +1226,7 @@ def printCaptainChoices(printType = 'private'): ##TEST FOR FUNCTIONALITY EQUIVAL
     # ( bold Number Captain Protected bold ) classcolor name nocolor 
     choiceList = ["(%d%s%s\x0f)%s%s\x0f" % (
             getPlayerNumber(userName),
-            (captainColor + 'C' if userList[userName]['status'] == 'captain'),
+            (captainColor + 'C') if userList[userName]['status'] == 'captain' else '',
             '',
             classColors[userList[userName]['class']],
             userName) for USerName in userList]
