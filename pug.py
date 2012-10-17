@@ -454,12 +454,20 @@ def executeCommand(userName, escapedUserCommand, userCommand):
 def extractClasses(userCommand):
     global classList
     classes = []
-    commandList = string.split(userCommand, ' ')
+    commandList = string.split(userCommand.lower(), ' ')
     for i in commandList:
         for j in classList:
             if i == j:
                 classes.append(j)
     return classes
+
+def extractFirstClass(userCommand):
+    global classList
+    commandList = string.split(userCommand.lower(), ' ')
+    for i in commandList:
+        for j in classList:
+            if i == j:
+                return j
 
 def extractUserName(user):
     if user:
