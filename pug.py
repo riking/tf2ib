@@ -104,10 +104,32 @@ def addFriend(userName, userCommand):
 
 def addGame(userName, userCommand):
     resetVariables()
-    global allowFriends, classList, classLimits, gameServer, lastGameType, state, userLimit
+    global allowFriends, classAbbrev, classColors, classList, classLimits, gameServer, lastGameType, state, userLimit
     if not setIP(userName, userCommand):
         return 0
     # Game type.
+    classColors = {
+        'scout': '\x031,9',
+        'soldier': '\x030,14',
+        'pyro': '\x030,4',
+        'demo': '\x030,2',
+        'heavy': '\x030,7',
+        'engineer': '\x031,8',
+        'medic': '\x030,13',
+        'sniper': '\x030,1',
+        'spy': '\x031,0',
+    }
+    classAbbrev = {
+        'scout': 'Sco',
+        'soldier': 'Sol',
+        'pyro': 'Pyr',
+        'demo': 'Dem',
+        'heavy': 'Hev',
+        'engineer': 'Eng',
+        'medic': 'Med',
+        'sniper': 'Sni',
+        'spy': 'Spy',
+    }
     if re.search('captain', userCommand):
         allowFriends = 0
         classList = ['demo', 'medic', 'scout', 'soldier']
