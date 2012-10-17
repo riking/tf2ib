@@ -170,7 +170,7 @@ def analyseIRCText(connection, event):
                 executeCommand(userName, escapedUserCommand, userCommand)
             else :
             # Exit and report an error.
-                sendNotice("\x030,01Warning " + userName + ", you are trying an admin command as a normal user.")
+                sendNotice("\x02Warning " + userName + ", you are trying an admin command as a normal user.")
         elif isUserCommand(userName, escapedUserCommand, userCommand):
                 executeCommand(userName, escapedUserCommand, userCommand)
 
@@ -183,11 +183,11 @@ def assignCaptains(mode = 'captain'):
         captain2 = getAPlayer('captain')
         userList[captain2['nick']]['status'] = 'captain'
         assignUserToTeam(captain2['class'][0], 0, 'b', userList[captain2['nick']])
-        sendChannel('\x030,01Captains are \x0311,01' + teamA[0]['nick'] + '\x030,01 and \x034,01' + teamB[0]['nick'] + "\x030,01.")
+        sendChannel('Captains are \x0311,01' + teamA[0]['nick'] + '\x0f and \x034,01' + teamB[0]['nick'] + "\x0f.")
     elif mode == 'scrim':
         captain1 = getAPlayer('captain')
         assignUserToTeam(captain1['class'][0], 0, 'a', userList[captain1['nick']])
-        sendChannel('\x030,01Captain is \x0308,01' + teamA[0]['nick'] + '\x030,01.')
+        sendChannel('\x0fCaptain is \x0308,01' + teamA[0]['nick'] + '\x0f.')
     printCaptainChoices()
 
 def assignUserToTeam(gameClass, recursiveFriend, team, user):
@@ -274,9 +274,9 @@ def captain():
             if user['status'] == 'captain':
                 captainName = user['nick']
                 break
-        sendChannel('\x030,01Captain picking turn is to ' + captainName + '.')
+        sendChannel('\x02Captain picking turn is to ' + captainName + '.')
     else:
-        sendChannel('\x030,01Picking process has not been started yet.')
+        sendChannel('\x02Picking process has not been started yet.')
 
 def checkConnection():
     global connectTimer
@@ -1037,7 +1037,7 @@ def listeningTF2Servers():
 
 def mumble():
     global voiceServer
-    message = "\x030,01Voice server IP : " + voiceServer['ip'] + ":" + voiceServer['port'] + "  Password : " + password + "  Download : http://downloads.sourceforge.net/project/mumble/Mumble/1.2.2/Mumble-1.2.2.exe"
+    message = "\x02Voice server IP : " + voiceServer['ip'] + ":" + voiceServer['port'] + "  Password : " + password + "  Download : http://downloads.sourceforge.net/project/mumble/Mumble/1.2.2/Mumble-1.2.2.exe"
     sendChannel("" + message)
 
 def need(userName, params):
@@ -1056,12 +1056,12 @@ def need(userName, params):
         captainsNeeded = 2 - countCaptains()
 
     if neededPlayers == 0 and captainsNeeded == 0:
-        sendChannel("\x030,01no players needed.")
+        sendChannel("\x02no players needed.")
     else:
         msg = ", ".join(['%s: %s' % (key, value) for (key, value) in neededClasses.items()])
         if state == 'captain' and countCaptains() < 2:
             msg = msg + ", captain: %d" % (captainsNeeded,)
-        sendChannel("\x030,01%d player(s) needed: %s" % (neededPlayers, msg))
+        sendChannel("\x02%d player(s) needed: %s" % (neededPlayers, msg))
 
 def needsub(userName, userCommand):
     global classList, subList
@@ -1080,9 +1080,9 @@ def needsub(userName, userCommand):
         return 0
     # Set the team.
     if 'blue' in commandList:
-        sub['team'] = '\x0311,01Blue\x030,01'
+        sub['team'] = '\x0311,01Blue\x0f'
     elif 'red' in commandList:
-        sub['team'] = '\x034,01Red\x030,01'
+        sub['team'] = '\x034,01Red\x0f'
     # Set the class.
     for argument in commandList:
         if argument in classList:
@@ -1216,7 +1216,7 @@ def printCaptainChoices(printType = 'private'): ##TEST FOR FUNCTIONALITY EQUIVAL
         sendNotice("Remaining classes : %s." % ', '.join(getRemainingClasses()), captainName)
     else:
         captainColor = '\x038,01'
-        followingColor = '\x030,01'
+        followingColor = '\x0f'
         protectedColor = '\x039,01'
     for gameClass in classList:
         choiceList = []
@@ -1293,7 +1293,7 @@ def printTeamsHandicaps():
             winRatioOverall[teamIndex] = 0
         else:
             winRatioOverall[teamIndex] = 100 * (float(handicapTotal[teamIndex] + gamesPlayedCounter[teamIndex]) / float(2 * gamesPlayedCounter[teamIndex]))
-    sendChannel("" + "Teams wins ratios : \x0311,01" + str(int(winRatioOverall[0])) + "%\x030,01 / \x034,01" + str(int(winRatioOverall[1])) + "%")
+    sendChannel("" + "Teams wins ratios : \x0311,01" + str(int(winRatioOverall[0])) + "%\x0f / \x034,01" + str(int(winRatioOverall[1])) + "%")
 
 def printUserList():
     global lastUserPrint, printTimer, state, userList
