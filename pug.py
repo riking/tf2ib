@@ -1223,9 +1223,8 @@ def printCaptainChoices(printType = 'private'): ##TEST FOR FUNCTIONALITY EQUIVAL
             # classcolor ClassName s nocolor : [players]
             messageType("%s%ss\x0f: %s" % (classColors[gameClass], gameClass.capitalize(), ', '.join(choiceList)))
     # String format:
-    # classcolor ( bold Number Captain Protected bold classcolor ) nocolor name 
-    choiceList = ["%s(\x02%d%s%s\x02%s)\x0f%s" % (
-            classColors[userList[userName]['class']],
+    # ( bold Number Captain Protected bold ) classcolor name nocolor 
+    choiceList = ["(%d%s%s\x0f)%s%s\x0f" % (
             getPlayerNumber(userName),
             (captainColor + 'C' if userList[userName]['status'] == 'captain'),
             '',
