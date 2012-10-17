@@ -109,45 +109,50 @@ def addGame(userName, userCommand):
         return 0
     # Game type.
     classColors = {
-        'scout': '\x031,9',
-        'soldier': '\x030,14',
-        'pyro': '\x030,4',
-        'demo': '\x030,2',
-        'heavy': '\x030,7',
-        'engineer': '\x031,8',
-        'medic': '\x030,13',
-        'sniper': '\x030,1',
-        'spy': '\x031,0',
+        'scout':    '\x031,9',        'soldier':  '\x030,14',        'pyro':     '\x030,4',
+        'demo':     '\x030,2',        'heavy':    '\x030,7',        'engineer': '\x031,8',
+        'medic':    '\x030,13',        'sniper':   '\x030,1',        'spy':      '\x031,0',
     }
     classAbbrev = {
-        'scout': 'Sco',
-        'soldier': 'Sol',
-        'pyro': 'Pyr',
-        'demo': 'Dem',
-        'heavy': 'Hev',
-        'engineer': 'Eng',
-        'medic': 'Med',
-        'sniper': 'Sni',
-        'spy': 'Spy',
+        'scout':    'Sco',        'soldier':  'Sol',        'pyro':     'Pyr',
+        'demo':     'Dem',        'heavy':    'Hev',        'engineer': 'Eng',
+        'medic':    'Med',        'sniper':   'Sni',        'spy':      'Spy',
     }
     if re.search('captain', userCommand):
         allowFriends = 0
         classList = ['demo', 'medic', 'scout', 'soldier']
         lastGameType = 'captain'
         state = 'captain'
-        userLimit = 24
+        userLimit = 24 # Userlimit is doubled to allow for unwanted players.
+                       # Only 12 actually play.
+        # Note: class limits are across both teams
+        classLimits = {
+            'scout':    8,            'soldier':  8,            'pyro':     0,
+            'demo':     4,            'heavy':    0,            'engineer': 0,
+            'medic':    4,            'sniper':   0,            'spy':      0,
+        }
     elif re.search('highlander', userCommand):
         allowFriends = 0
         classList = ['demo', 'engineer', 'heavy', 'medic', 'pyro', 'scout', 'sniper', 'soldier', 'spy']
         lastGameType = 'highlander'
         state = 'highlander'
         userLimit = 18
+        classLimits = {
+            'scout':    2,            'soldier':  2,            'pyro':     2,
+            'demo':     2,            'heavy':    2,            'engineer': 2,
+            'medic':    2,            'sniper':   2,            'spy':      2,
+        }
     else:
         allowFriends = 0
         classList = ['demo', 'medic', 'scout', 'soldier']
         lastGameType = 'normal'
         state = 'normal'
         userLimit = 12
+        classLimits = {
+            'scout':    4,            'soldier':  4,            'pyro':     0,
+            'demo':     2,            'heavy':    0,            'engineer': 0,
+            'medic':    2,            'sniper':   0,            'spy':      0,
+        }
     updateLast(gameServer.split(':')[0], gameServer.split(':')[1], -(time.time()))
     sendChannel('\x030,04PUG started. Game type : ' + state + '. Type "!add" to join a game.')
 
@@ -592,17 +597,8 @@ def getAuthorizationStatus(userName):
     return [userName, 0, 0, 0, '']
 
 def getAvailableClasses():
-    availableClasses = []
-    if userLimit == 12:
-        numberOfPlayersPerClass = {'demo':2, 'medic':2, 'scout':4, 'soldier':4}
-    elif userLimit == 24:
-        numberOfPlayersPerClass = {'demo':4, 'medic':4, 'scout':8, 'soldier':8}
-    if getTeamSize() == 9:
-        numberOfPlayersPerClass = {'demo':2, 'engineer':2, 'heavy':2, 'medic':2, 'pyro':2, 'scout':2, 'sniper':2, 'soldier':2, 'spy':2}
-    for gameClass in classList:
-        if classCount(gameClass) < numberOfPlayersPerClass[gameClass]:
-            availableClasses.append(gameClass)
-    return availableClasses
+    global classLimits, classList
+    return [c for c in classList if classCount(gameClass) < classLimits[gameClass]]
 
 def getAvailableServer():
     for server in getServerList():
